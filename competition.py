@@ -3,13 +3,16 @@ import player
 import pandas as pd
 import seaborn as sns
 import multiprocessing as mp
+
+
 class Competition():
-    def __init__(self,games_number,players,game_type = game.NO_SCREEN,max_turns = -1, game_size = 5,initial_board = None,store_in_db = True):
+    def __init__(self,games_number,players,game_type = game.NO_SCREEN,max_turns = -1, game_size = 5,initial_board = None,store_in_db = True,parallel = False):
         self.store_in_db = store_in_db
         self.initial_board = initial_board
         self.games_number = games_number
         self.players_number = 1
         self.game_size = game_size
+        self.parallel = parallel
         if isinstance(players,list):
             for p in players:
                 if not issubclass(type(p),player.Player):
@@ -26,15 +29,16 @@ class Competition():
         self.results = {}
 
     def play(self):
-        for player in self.players:
-            self.results.update([(player.name,[])])
-            game_list = []
+        if self.parallel ==True:
             pool = mp.Pool(processes=mp.cpu_count())
-            for i in range(self.games_number):
-                game_list.append(game.Game(size=self.game_size,max_moves= self.max_turns,game_type=self.game_type,player=player,initial_board=self.initial_board,store_in_db=self.store_in_db))
-            pool.map(run_game_parallel,game_list)
-            for g in game_list:
-                self.results[player.name].append((g.board.get_score(),g.board.get_max_score(),g.board.moves))
+            for player in self.players:
+                self.results.update([(player.name,[])])
+                game_list = []
+                for i in range(self.games_number):
+                    game_list.append(game.Game(size=self.game_size,max_moves= self.max_turns,game_type=self.game_type,player=player,initial_board=self.initial_board,store_in_db=self.store_in_db))
+                pool.map(run_game_parallel,game_list)
+                for g in game_list:
+                    self.results[player.name].append((g.board.get_score(),g.board.get_max_score(),g.board.moves))
 
     def show_results(self,dont_show = True):
         # You need to make the storing and getting the results of the competition more comfortable and documented
