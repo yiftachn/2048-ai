@@ -2,6 +2,7 @@ import game
 import player
 import pandas as pd
 import seaborn as sns
+import multiprocessing as mp
 class Competition():
     def __init__(self,games_number,players,game_type = game.NO_SCREEN,max_turns = -1, game_size = 5,initial_board = None,store_in_db = True):
         self.store_in_db = store_in_db
@@ -27,9 +28,12 @@ class Competition():
     def play(self):
         for player in self.players:
             self.results.update([(player.name,[])])
+            game_list = []
+            pool = mp.Pool(processes=mp.cpu_count())
             for i in range(self.games_number):
-                g = game.Game(size=self.game_size,max_moves= self.max_turns,game_type=self.game_type,player=player,initial_board=self.initial_board,store_in_db=self.store_in_db)
-                g.run_game()
+                game_list.append(game.Game(size=self.game_size,max_moves= self.max_turns,game_type=self.game_type,player=player,initial_board=self.initial_board,store_in_db=self.store_in_db))
+            pool.map(run_game_parallel,game_list)
+            for g in game_list:
                 self.results[player.name].append((g.board.get_score(),g.board.get_max_score(),g.board.moves))
 
     def show_results(self,dont_show = True):
@@ -65,3 +69,5 @@ class Competition():
             plt.subplot(155)
             g2 = sns.barplot(x = 'player',y='min',data = self.stats_df)
             plt.show()
+def run_game_parallel(g:game.Game):
+    g.run_game()
