@@ -39,6 +39,14 @@ class Competition():
                 pool.map(run_game_parallel,game_list)
                 for g in game_list:
                     self.results[player.name].append((g.board.get_score(),g.board.get_max_score(),g.board.moves))
+        elif self.parallel == False:
+            for player in self.players:
+                self.results.update([(player.name, [])])
+                for i in range(self.games_number):
+                    g = game.Game(size=self.game_size, max_moves=self.max_turns, game_type=self.game_type,
+                                  player=player, initial_board=self.initial_board, store_in_db=self.store_in_db)
+                    g.run_game()
+                    self.results[player.name].append((g.board.get_score(), g.board.get_max_score(), g.board.moves))
 
     def show_results(self,dont_show = True):
         # You need to make the storing and getting the results of the competition more comfortable and documented

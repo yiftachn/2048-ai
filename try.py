@@ -1,13 +1,13 @@
-import pandas as pd
-import seaborn as sns
+# import pandas as pd
+# import seaborn as sns
 from matplotlib import pyplot as plt
 import competition
 import player
 import game
 import time
-import pandas as pd
-import timeit
-import multiprocessing as mp
+# import pandas as pd
+# import timeit
+# import multiprocessing as mp
 # p = player.StatisticPlayer([50,50,20,20])
 # p1 = player.StatisticPlayer([60,30,5,5])
 # p2 = player.StatisticPlayer([33,33,10,33])
@@ -28,12 +28,14 @@ import multiprocessing as mp
 # data.close()
 
 if __name__=='__main__':
-    p = player.MonteCarloPlayer()
-    # c = competition.Competition(game_size=4, games_number=30, players=[p], game_type=game.NO_SCREEN)
-    # c.play()
-    game_list = []
-    pool = mp.Pool(processes=mp.cpu_count())
-    for i in range(5):
-        game_list.append(
-            game.Game(player = p,game_type=game.NO_SCREEN))
-    pool.map(competition.run_game_parallel, game_list)
+    l = []
+    player = player.StatisticPlayer()
+    for number in [1000,5000]:
+        for p in [True,False]:
+            c = competition.Competition(game_size=4, games_number=number, players=[player], game_type=game.NO_SCREEN,parallel=p,store_in_db=False)
+            for i in range(10):
+                start = time.time()
+                c.play()
+                end = time.time()
+                l.append((number,p,end-start))
+    print(l)

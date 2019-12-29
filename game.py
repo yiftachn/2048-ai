@@ -1,6 +1,6 @@
 from engine import Board
-import pygame
-from screen import Screen
+# import pygame
+#from screen import Screen
 from database import Database
 import time
 USER ='USER'
@@ -20,6 +20,8 @@ class Game:
         except:
             self.player_name = 'user'
         if game_type!=NO_SCREEN:
+            import pygame
+            from screen import Screen
             self.screen = Screen(screen_h,screen_w,self.board)
         self.history = {HISTORY[0] :[ row[:] for row in self.board.board],HISTORY[1]:[],HISTORY[2]:-1,HISTORY[3]: False,HISTORY[4]: -1,HISTORY[5]:self.player_name}
         self.finished = False

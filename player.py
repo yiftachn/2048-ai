@@ -52,7 +52,7 @@ class MonteCarloPlayer(Player):
         for initial_move in best_move:
             new_board = copy.deepcopy(self.board)
             new_board.move_board(initial_move)
-            comp = Competition(games_number=self.games_number,game_size=self.board.size,max_turns=self.max_turns,players=[random_player],initial_board=new_board,store_in_db = False)
+            comp = Competition(parallel=False,games_number=self.games_number,game_size=self.board.size,max_turns=self.max_turns,players=[random_player],initial_board=new_board,store_in_db = False)
             comp.play()
             comp.show_results()
             average = comp.results['score'].mean()
