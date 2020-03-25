@@ -39,7 +39,7 @@ class StatisticPlayer(Player):
 
 
 class MonteCarloPlayer(Player):
-    def __init__(self,max_turns = 5,games_number = 30):
+    def __init__(self,max_turns = 5,games_number = 12):
         self.name = 'MonteCarlo_max_turns:' +str(max_turns) +'games_number:' + str(games_number)
         self.max_turns = max_turns
         self.games_number = games_number
@@ -47,12 +47,16 @@ class MonteCarloPlayer(Player):
         start = time.time()
         from competition import Competition
         self.board = board
-        random_player = Player('random')
+        #random_player = Player('random')
+        games_number = self.games_number
+        size = self.board.size
+        player = MonteCarloPlayer(max_turns=self.max_turns-1)
+        max_turns = player.max_turns
         best_move = {engine.UP:0,engine.DOWN:0,engine.LEFT:0,engine.RIGHT:0}
         for initial_move in best_move:
             new_board = copy.deepcopy(self.board)
             new_board.move_board(initial_move)
-            comp = Competition(parallel=False,games_number=self.games_number,game_size=self.board.size,max_turns=self.max_turns,players=[random_player],initial_board=new_board,store_in_db = False)
+            comp = Competition(parallel=False,games_number=games_number,game_size=size,max_turns=max_turns,players=[player],initial_board=new_board,store_in_db = False)
             comp.play()
             comp.show_results()
             average = comp.results['score'].mean()
